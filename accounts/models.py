@@ -33,8 +33,8 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
 
-    MALE = 'MA'
-    FEMALE = 'FE'
+    MALE = 'male'
+    FEMALE = 'female'
     NA = 'NA'
 
     GENDER_CHOICES = [
@@ -42,7 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         (FEMALE, 'Female'),
         (NA, 'N/A'),
     ]
-    STAFF = 'STAFF'
+    STAFF = 'Staff'
 
     ROLE_CHOICE = [
         (STAFF, 'Staff')
@@ -52,20 +52,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=255, null=True, blank=True)
     last_name = models.CharField(max_length=255, null=True, blank=True)
     gender = models.CharField(
-        max_length=2,
+        max_length=31,
         choices=GENDER_CHOICES,
         default=MALE
     )
     role = models.CharField(
-        max_length=10,
+        max_length=31,
         choices=ROLE_CHOICE,
         default=STAFF
     )
     date_of_birth = models.DateField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    security_question = models.CharField(max_length=255)
-    serurity_answer = models.CharField(max_length=255)
+
     website = models.CharField(max_length=255, null=True, blank=True)
     address = models.CharField(max_length=512, null=True, blank=True)
     mobile = models.CharField(max_length=20, null=True, blank=True)
@@ -84,16 +83,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Schedule(models.Model):
-    MONDAY = 'MONDAY'
-    TUESDAY = 'TUESDAY'
-    MONDAY = 'MONDAY'
-    WEDNESDAY = 'WEDNESDAY'
-    THURSDAY = 'THURSDAY'
-    FRIDAY = 'FRIDAY'
-    SATURDAY = 'SATURDAY'
-    SUNDAY = 'SUNDAY'
+    MONDAY = 'monday'
+    TUESDAY = 'tuesday'
+    WEDNESDAY = 'wednesday'
+    THURSDAY = 'thursday'
+    FRIDAY = 'friday'
+    SATURDAY = 'saturday'
+    SUNDAY = 'sunday'
 
-    WEEKDAY_CHOICES = (
+    WEEKDAY_CHOICES = [
         (MONDAY, 'monday'),
         (TUESDAY, 'tuesday'),
         (WEDNESDAY, 'wednesday'),
@@ -101,18 +99,19 @@ class Schedule(models.Model):
         (FRIDAY, 'friday'),
         (SATURDAY, 'saturday'),
         (SUNDAY, 'sunday'),
-    )
+
+    ]
     staff = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='schedules')
     weekDay = models.CharField(
-        max_length=10,
+        max_length=31,
         choices=WEEKDAY_CHOICES,
         default=MONDAY
     )
 
-    MORNING = 'MORNING'
-    AFTERNOON = 'AFTERNOON'
-    EVENING = 'EVENING'
+    MORNING = 'morning'
+    AFTERNOON = 'afternoon'
+    EVENING = 'evening'
 
     WORKING_TIME_CHOICES = (
         (MORNING, 'morning'),
@@ -121,7 +120,7 @@ class Schedule(models.Model):
     )
 
     workingTime = models.CharField(
-        max_length=10,
+        max_length=31,
         choices=WORKING_TIME_CHOICES,
         default=MORNING
     )
