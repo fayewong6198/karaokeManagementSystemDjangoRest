@@ -1,4 +1,4 @@
-from .models import Room, Product, Category
+from .models import Room, Product, Category, Payment
 from rest_framework import serializers
 
 
@@ -19,3 +19,9 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name', 'created_at']
+
+
+class PaymentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ['id', 'checkInDate', 'checkOutDate', 'total']

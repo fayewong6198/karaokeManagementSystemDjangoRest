@@ -25,7 +25,6 @@ class PaymentAdmin(admin.ModelAdmin):
     inlines = [ProductUsedInline, ]
     list_display = ('id', 'room', 'total', 'checkInDate',
                     'checkOutDate', 'status')
-
     list_display_links = ('id', 'room')
     list_per_page = 25
 

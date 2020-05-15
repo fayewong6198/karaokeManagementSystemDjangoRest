@@ -1,7 +1,7 @@
-from .models import Room, Product, Category
+from .models import Room, Product, Category, Payment
 from rest_framework import viewsets, mixins
 from rest_framework import permissions
-from .serializers import RoomSerializer, ProductSerializer, CategorySerializer
+from .serializers import RoomSerializer, ProductSerializer, CategorySerializer, PaymentSerializer
 
 
 class RoomViewSet(viewsets.ModelViewSet):
@@ -23,3 +23,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all().order_by('-created_at')
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class PaymentViewSet(viewsets.ModelViewSet):
+    queryset = Payment.objects.all().order_by('-created_at')
+    serializer_class = PaymentSerializer
+ #   permission_classes = [permissions.IsAuthenticated]

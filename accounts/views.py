@@ -74,6 +74,7 @@ class RetriveUserViewSet(views.APIView, PaginationHandlerMixin):
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
 
+        instance.save()
         # Delete old schedule
         Schedule.objects.filter(staff=instance).delete()
 

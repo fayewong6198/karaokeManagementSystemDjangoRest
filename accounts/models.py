@@ -32,7 +32,6 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-
     MALE = 'male'
     FEMALE = 'female'
     NA = 'NA'

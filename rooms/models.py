@@ -76,7 +76,7 @@ class Payment(models.Model):
     def get_total(self):
         price = 0
         for product in self.products.all():
-            price = price + product.quantity
+            price = price + product.productId.price * product.quantity
         return price
 
     total = property(get_total)
