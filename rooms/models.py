@@ -41,7 +41,7 @@ class Product(models.Model):
         Category, on_delete=models.CASCADE, related_name="products", blank=True, null=True)
     price = models.IntegerField(default=0)
     discount = models.IntegerField(default=0)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     stock = models.IntegerField(default=0)
 
     created_at = models.DateTimeField(default=datetime.now)
