@@ -73,8 +73,17 @@ class Payment(models.Model):
         default=CHECKED_IN
     )
 
-    total = models.DecimalField(max_digits=20, decimal_places=2)
+    def get_total(self):
+        price = 0
+        for product in self.products.all():
+            price = price + product.quantity
+        return price
+
+    total = property(get_total)
     created_at = models.DateTimeField(default=datetime.now)
+
+    def __str__(self):
+        return self.status
 
 
 class ProductUsed(models.Model):
@@ -85,6 +94,3 @@ class ProductUsed(models.Model):
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     created_at = models.DateTimeField(default=datetime.now)
-
-    def __str__(self):
-        return self.id
