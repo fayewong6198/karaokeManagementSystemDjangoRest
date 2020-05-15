@@ -1,12 +1,37 @@
-from .models import User
+from .models import User, Schedule
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 
 
+class ScheduleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Schedule
+        fields = ['id', 'staff', 'weekDay', 'workingTime']
+
+
+class InlineScheduleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Schedule
+        fields = ['weekDay', 'workingTime']
+
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    schedules = InlineScheduleSerializer(many=True)
+
     class Meta:
         model = User
-        fields = ['username', 'email', 'gender', 'role', 'created_at']
+        fields = ['id', 'username', 'email', 'gender',
+                  'role', 'schedules', 'created_at']
+
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get(
+            'username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.gender = validated_data.get('gender', instance.gender)
+
+        return instance
 
 
 # Register Serializer

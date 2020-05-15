@@ -4,13 +4,8 @@ from django.contrib import admin
 from .models import User, Schedule
 
 
-class ScheduleAdmin(admin.ModelAdmin):
-    pass
-
-
 class ScheduleInline(admin.StackedInline):
     model = Schedule
-    max_num = 20
     extra = 0
 
 
@@ -22,3 +17,4 @@ class UserAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, UserAdmin)
+admin.site.register(Schedule)

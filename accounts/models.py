@@ -61,6 +61,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         choices=ROLE_CHOICE,
         default=STAFF
     )
+    MALE = 'male'
+    FEMALE = 'female'
+    NA = 'NA'
     date_of_birth = models.DateField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -106,7 +109,7 @@ class Schedule(models.Model):
     weekDay = models.CharField(
         max_length=31,
         choices=WEEKDAY_CHOICES,
-        default=MONDAY
+        default=TUESDAY
     )
 
     MORNING = 'morning'
@@ -122,7 +125,10 @@ class Schedule(models.Model):
     workingTime = models.CharField(
         max_length=31,
         choices=WORKING_TIME_CHOICES,
-        default=MORNING
+        default=AFTERNOON
     )
 
     created_at = models.DateTimeField(default=datetime.now)
+
+    def __str__(self):
+        return self.weekDay

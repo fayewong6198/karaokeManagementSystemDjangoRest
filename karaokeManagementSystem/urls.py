@@ -21,7 +21,8 @@ from accounts import views as accounts_views
 from rooms import views as rooms_views
 
 router = routers.DefaultRouter()
-router.register(r'users', accounts_views.UserViewSet)
+# router.register(r'users', accounts_views.UserViewSet)
+router.register(r'schedules', accounts_views.ScheduleViewSet)
 
 router.register(r'rooms', rooms_views.RoomViewSet)
 
