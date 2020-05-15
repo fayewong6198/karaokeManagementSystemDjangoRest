@@ -37,7 +37,7 @@ class Category(models.Model):
 class Product(models.Model):
     sku = models.CharField(max_length=255, unique=True)
     productName = models.CharField(max_length=255)
-    catetory = models.ForeignKey(
+    category = models.ForeignKey(
         Category, on_delete=models.CASCADE, related_name="products", blank=True, null=True)
     price = models.IntegerField(default=0)
     discount = models.IntegerField(default=0)

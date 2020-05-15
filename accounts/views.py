@@ -17,7 +17,7 @@ class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
     """
     queryset = User.objects.all().order_by('-created_at')
 
-#    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
 
     def get(self, request, format=None):
@@ -101,6 +101,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 # Register API
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         print(request.data)
@@ -116,6 +117,7 @@ class RegisterAPI(generics.GenericAPIView):
 # Login API
 class LoginAPI(generics.GenericAPIView):
     serializer_class = LoginSerializer
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         print(request.data)
