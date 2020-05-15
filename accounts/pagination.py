@@ -1,5 +1,5 @@
 from rest_framework.pagination import PageNumberPagination
-
+import math
 from rest_framework.response import Response
 
 
@@ -18,6 +18,8 @@ class StandardResultsSetPagination(PageNumberPagination):
         return Response({
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
+            'maxPage': math.ceil(self.page.paginator.count / self.page_size),
+            'currentPage': self.page.number,
             'count': self.page.paginator.count,
             'results': data
         })
