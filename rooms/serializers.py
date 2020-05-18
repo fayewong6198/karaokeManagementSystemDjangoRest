@@ -1,4 +1,4 @@
-from .models import Room, Product, Category, Payment
+from .models import Room, Product, Category, Payment, ProductUsed
 from rest_framework import serializers
 
 
@@ -21,7 +21,22 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'name', 'created_at']
 
 
+class InlineProductUsedSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProductUsed
+        fields = ['productId', 'price', 'quantity', 'created_at']
+
+
+class ProductUsedSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProductUsed
+        fields = ['id', 'payment', 'productId',
+                  'price', 'quantity', 'created_at']
+
+
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):
+    products = InlineProductUsedSerializer(many=True)
+
     class Meta:
         model = Payment
-        fields = ['id', 'checkInDate', 'checkOutDate', 'total']
+        fields = ['id', 'checkInDate', 'checkOutDate', 'product', 'total']

@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime, date
+import decimal
 
 
 class Room(models.Model):
@@ -74,9 +75,15 @@ class Payment(models.Model):
     )
 
     def get_total(self):
-        price = 0
+        diff = ((self.checkOutDate - self.checkInDate) / 3600)
+        diff = diff.total_seconds()
+        print(diff)
+        price = self.room.price * diff
+
         for product in self.products.all():
-            price = price + product.productId.price * product.quantity
+            price = decimal.Decimal(
+                price) + product.productId.price * product.quantity
+
         return price
 
     total = property(get_total)
