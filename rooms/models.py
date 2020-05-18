@@ -58,8 +58,6 @@ class Payment(models.Model):
     checkInDate = models.DateTimeField(default=datetime.now)
     checkOutDate = models.DateTimeField(default=datetime.now)
 
-    totalHourSpend = models.DecimalField(max_digits=15, decimal_places=2)
-
     CHECKED_IN = 'checkedIn'
     CHECKED_OUT = 'checkedOut'
 

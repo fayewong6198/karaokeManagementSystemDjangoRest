@@ -32,3 +32,4 @@ class PaymentAdmin(admin.ModelAdmin):
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Payment, PaymentAdmin)
+admin.site.register(ProductUsed)

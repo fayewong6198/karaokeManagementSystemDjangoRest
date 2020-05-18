@@ -48,32 +48,44 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         Return a list of all users.
         """
         instance = Payment.objects.all().order_by('-created_at')
-        print(1)
+
         page = self.paginate_queryset(instance)
-        print(2)
+
         if page is not None:
-            print(3)
+
             serializer = self.get_paginated_response(PaymentSerializer(
                 instance=page, context={'request': request}, many=True).data)
         else:
             serializer = PaymentSerializer(
                 instance, many=True)
 
-        print(2)
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        serializer_class = RegisterSerializer
+        serializer_class = ProductSerializer
         serializer = PaymentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payment = serializer.save()
 
+        payment.save()
         # Create schedule for user
         for product in request.data["products"]:
+            print("ccccc")
             product["payment"] = payment.id
+            print(payment.id)
             product_used_serializer = ProductUsedSerializer(data=product)
             product_used_serializer.is_valid(raise_exception=True)
             new_product_used = product_used_serializer.save()
+
+        if instance.status == "checkedOut":
+            # change stock in product
+            for productUsed in instance.products:
+                print("dasdas")
+                print(productUsed)
+                product = get_object_or_404(
+                    Product, pk=productUsed["productId"])
+                product.stock = product.stock - productUsed.quantity
+                product.save()
 
         return Response({
             'user': PaymentSerializer(payment).data
@@ -98,26 +110,40 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
         """
         Update Payment.
         """
-        instance = get_object_or_404(User, pk=pk)
+        instance = get_object_or_404(Payment, pk=pk)
+        if instance.status == "checkedOut":
+            return Response({"msg": "The payment can not be modified"})
         serializer = PaymentSerializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
 
         instance.save()
         # Delete old product
-        ProductUsed.objects.filter(staff=instance).delete()
+        ProductUsed.objects.filter(payment=instance).delete()
 
         # Update schedule for user
         for product in request.data["products"]:
             product["payment"] = instance.id
+            productUsed = get_object_or_404(Product, pk=product["productId"])
             product_used_serializer = ProductUsedSerializer(data=product)
             product_used_serializer.is_valid(raise_exception=True)
             new_product_used = product_used_serializer.save()
+
+        if instance.status == "checkedOut":
+            # change stock in product
+            for productUsed in instance.products.all():
+                product_used = ProductUsedSerializer(productUsed)
+                id = product_used["productId"].value
+
+                product = get_object_or_404(Product, pk=id)
+
+                product.stock = product.stock - productUsed.quantity
+                product.save()
 
         return Response(PaymentSerializer(instance=instance).data)
 
     def delete(selt, request, format=None, pk=None):
         payment = get_object_or_404(Payment, pk=pk)
         print(Payment)
-        payment.delete()
-        return Response({'msg': 'User deleted'})
+        payment_deleted = payment.delete()
+        return Response({'msg': payment_deleted})
