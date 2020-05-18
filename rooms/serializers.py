@@ -24,7 +24,7 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 class InlineProductUsedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProductUsed
-        fields = ['productId', 'price', 'quantity', 'created_at']
+        fields = ['productId', 'quantity', 'created_at']
 
 
 class ProductUsedSerializer(serializers.HyperlinkedModelSerializer):
@@ -39,4 +39,4 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Payment
-        fields = ['id', 'checkInDate', 'checkOutDate', 'product', 'total']
+        fields = ['id', 'checkInDate', 'checkOutDate', 'products', 'total']

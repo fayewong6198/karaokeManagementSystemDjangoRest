@@ -3,6 +3,8 @@ from rest_framework import viewsets, mixins, views
 from rest_framework import permissions
 from accounts.pagination import PaginationHandlerMixin, StandardResultsSetPagination
 from .serializers import RoomSerializer, ProductSerializer, CategorySerializer, PaymentSerializer, ProductUsedSerializer
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 
 class RoomViewSet(viewsets.ModelViewSet):
@@ -45,14 +47,18 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         Return a list of all users.
         """
         instance = Payment.objects.all().order_by('-created_at')
+        print(1)
         page = self.paginate_queryset(instance)
+        print(2)
         if page is not None:
-            serializer = self.get_paginated_response(PaymentSerializer(page,
-                                                                       many=True).data)
+            print(3)
+            serializer = self.get_paginated_response(PaymentSerializer(
+                instance=page, context={'request': request}, many=True).data)
         else:
             serializer = PaymentSerializer(
                 instance, many=True)
 
+        print(2)
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
@@ -75,13 +81,16 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
 class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
+    permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request, format=None, pk=None):
         """
         Return a single user.
         """
         instance = get_object_or_404(Payment, pk=pk)
 
-        serializer = Payment(instance=instance)
+        serializer = PaymentSerializer(
+            instance=instance, context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, format=None, pk=None):
