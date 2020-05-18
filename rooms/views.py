@@ -1,7 +1,7 @@
 from .models import Room, Product, Category, Payment, ProductUsed
 from rest_framework import viewsets, mixins, views
 from rest_framework import permissions
-from accounts.pagination import PaginationHandlerMixin, StandardResultsSetPagination
+from accounts.pagination import PaginationHandlerMixin, StandardResultsSetPagination, LargeResultsSetPagination
 from .serializers import RoomSerializer, ProductSerializer, CategorySerializer, PaymentSerializer, ProductUsedSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -20,6 +20,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all().order_by('-created_at')
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = LargeResultsSetPagination
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
