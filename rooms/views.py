@@ -89,9 +89,9 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
                 product.stock = product.stock - productUsed.quantity
                 product.save()
 
-        return Response({
+        return Response(
             PaymentSerializer(payment).data
-        })
+        )
 
 
 class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
