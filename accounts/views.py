@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
-from .pagination import StandardResultsSetPagination, PaginationHandlerMixin
+from .pagination import StandardResultsSetPagination, PaginationHandlerMixin, LargeResultsSetPagination
 
 
 class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
@@ -94,9 +94,21 @@ class RetriveUserViewSet(views.APIView, PaginationHandlerMixin):
         return Response({'msg': 'User deleted'})
 
 
+class AllUserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all().order_by('-created_at')
+    serializer_class = UserSerializer
+    pagination_class = LargeResultsSetPagination
+
+
 class ScheduleViewSet(viewsets.ModelViewSet):
     queryset = Schedule.objects.all().order_by('-created_at')
     serializer_class = ScheduleSerializer
+
+
+class AllScheduleViewSet(viewsets.ModelViewSet):
+    queryset = Schedule.objects.all().order_by('-created_at')
+    serializer_class = ScheduleSerializer
+    pagination_class = LargeResultsSetPagination
 
 
 # Register API

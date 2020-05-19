@@ -28,6 +28,17 @@ router.register(r'categories', rooms_views.CategoryViewSet)
 # router.register(r'payments', rooms_views.PaymentViewSet)
 router.register(r'rooms', rooms_views.RoomViewSet)
 
+"""
+Get all 
+"""
+# router.register(r'users', accounts_views.UserViewSet)
+router.register(r'allSchedules', accounts_views.AllScheduleViewSet)
+router.register(r'allProducts', rooms_views.AllProductViewSet)
+router.register(r'allCategories', rooms_views.AllCategoryViewSet)
+# router.register(r'payments', rooms_views.PaymentViewSet)
+router.register(r'allRooms', rooms_views.AllRoomViewSet)
+router.register(r'allUsers', accounts_views.AllUserViewSet)
+
 urlpatterns = [
     path('', include('accounts.urls')),
     path('admin/', admin.site.urls),

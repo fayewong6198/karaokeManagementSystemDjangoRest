@@ -11,7 +11,7 @@ class ScheduleInline(admin.StackedInline):
 
 class UserAdmin(admin.ModelAdmin):
     inlines = [ScheduleInline, ]
-    list_display = ('id', 'username', 'email')
+    list_display = ('id', 'username', 'email', 'monthly_salary')
     list_display_links = ('id', 'username')
     list_per_page = 25
 

@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 
 from datetime import datetime, date
 
+import decimal
+
 
 class UserManager(BaseUserManager):
 
@@ -73,12 +75,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     fax = models.CharField(max_length=20, null=True, blank=True)
     telephone = models.CharField(max_length=20, null=True, blank=True)
     created_at = models.DateTimeField(default=datetime.now)
-    # salary = models.DecimalField(max_digits=15, decimal_places=2)
+    salary = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 
-    # def get_monthly_salary(self):
-    #     return self.salary * 4.35 len(self.schedules.all)
+    def get_monthly_salary(self):
+        return self.salary * decimal.Decimal(4.35) * decimal.Decimal(len(self.schedules.all()))
 
-    # monthly_salary = property(get_monthly_salary)
+    monthly_salary = property(get_monthly_salary)
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
