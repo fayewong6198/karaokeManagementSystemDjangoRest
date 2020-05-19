@@ -77,18 +77,20 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
             product_used_serializer.is_valid(raise_exception=True)
             new_product_used = product_used_serializer.save()
 
-        if instance.status == "checkedOut":
+        if payment.status == "checkedOut":
             # change stock in product
-            for productUsed in instance.products:
+            for productUsed in payment.products.all():
                 print("dasdas")
-                print(productUsed)
+                product_used = ProductUsedSerializer(productUsed)
+                id = product_used["productId"].value
                 product = get_object_or_404(
-                    Product, pk=productUsed["productId"])
+                    Product, pk=id)
+
                 product.stock = product.stock - productUsed.quantity
                 product.save()
 
         return Response({
-            'user': PaymentSerializer(payment).data
+            PaymentSerializer(payment).data
         })
 
 

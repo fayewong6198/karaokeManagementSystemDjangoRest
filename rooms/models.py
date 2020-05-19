@@ -56,7 +56,7 @@ class Payment(models.Model):
         Room, on_delete=models.DO_NOTHING, related_name="payments")
 
     checkInDate = models.DateTimeField(default=datetime.now)
-    checkOutDate = models.DateTimeField(default=datetime.now)
+    checkOutDate = models.DateTimeField(null=True, blank=True)
 
     CHECKED_IN = 'checkedIn'
     CHECKED_OUT = 'checkedOut'
@@ -73,6 +73,8 @@ class Payment(models.Model):
     )
 
     def get_total(self):
+        if self.checkOutDate is None:
+            return 0
         diff = ((self.checkOutDate - self.checkInDate) / 3600)
         diff = diff.total_seconds()
         print(diff)
