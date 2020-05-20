@@ -1,19 +1,26 @@
 from .models import Room, Product, Category, Payment, ProductUsed
-from rest_framework import viewsets, mixins, views
+from rest_framework import viewsets, mixins, views, filters
 from rest_framework import permissions
 from accounts.pagination import PaginationHandlerMixin, StandardResultsSetPagination, LargeResultsSetPagination
 from .serializers import RoomSerializer, ProductSerializer, CategorySerializer, PaymentSerializer, ProductUsedSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class RoomViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = Room.objects.all().order_by('-created_at')
+    queryset = Room.objects.all()
     serializer_class = RoomSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+
+    # Explicitly specify which fields the API may be ordered against
+
+    # This will be used as the default ordering
+    ordering = ['-created_at']
 
 
 class AllRoomViewSet(viewsets.ModelViewSet):
@@ -24,6 +31,12 @@ class AllRoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = LargeResultsSetPagination
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+
+    # Explicitly specify which fields the API may be ordered against
+
+    # This will be used as the default ordering
+    ordering = ['-created_at']
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -31,6 +44,12 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+
+    # Explicitly specify which fields the API may be ordered against
+
+    # This will be used as the default ordering
+    ordering = ['-created_at']
 
 
 class AllProductViewSet(viewsets.ModelViewSet):
@@ -38,12 +57,24 @@ class AllProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = LargeResultsSetPagination
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+
+    # Explicitly specify which fields the API may be ordered against
+
+    # This will be used as the default ordering
+    ordering = ['-created_at']
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all().order_by('-created_at')
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+
+    # Explicitly specify which fields the API may be ordered against
+
+    # This will be used as the default ordering
+    ordering = ['-created_at']
 
 
 class AllCategoryViewSet(viewsets.ModelViewSet):
@@ -51,6 +82,12 @@ class AllCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = LargeResultsSetPagination
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+
+    # Explicitly specify which fields the API may be ordered against
+
+    # This will be used as the default ordering
+    ordering = ['-created_at']
 
 
 # class PaymentViewSet(viewsets.ModelViewSet):
@@ -72,6 +109,12 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         Return a list of all users.
         """
         instance = Payment.objects.all().order_by('-created_at')
+
+        sort_by = request.query_params.get('ordering')
+
+        my_model_fields = [field.name for field in Payment._meta.get_fields()]
+        if sort_by and sort_by in my_model_fields:
+            instance = instance.order_by(sort_by)
 
         page = self.paginate_queryset(instance)
 

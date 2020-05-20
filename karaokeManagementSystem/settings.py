@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_auth',
     'django.contrib.sites',
     'knox',
+    'django_filters',
 
 ]
 
@@ -162,5 +163,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 
     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 
 }

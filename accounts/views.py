@@ -1,5 +1,5 @@
 from .models import User, Schedule
-from rest_framework import viewsets, generics, mixins, views
+from rest_framework import viewsets, generics, mixins, views, filters
 from rest_framework import permissions
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, ScheduleSerializer
 from rest_framework.response import Response
@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
 from .pagination import StandardResultsSetPagination, PaginationHandlerMixin, LargeResultsSetPagination
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
@@ -25,6 +26,13 @@ class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
         Return a list of all users.
         """
         instance = User.objects.all().order_by('-created_at')
+
+        sort_by = request.query_params.get('ordering')
+
+        my_model_fields = [field.name for field in User._meta.get_fields()]
+        if sort_by and sort_by in my_model_fields:
+            instance = instance.order_by(sort_by)
+
         page = self.paginate_queryset(instance)
         if page is not None:
             serializer = self.get_paginated_response(UserSerializer(page,
@@ -95,20 +103,38 @@ class RetriveUserViewSet(views.APIView, PaginationHandlerMixin):
 
 
 class AllUserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all().order_by('-created_at')
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = LargeResultsSetPagination
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+
+    # Explicitly specify which fields the API may be ordered against
+
+    # This will be used as the default ordering
+    ordering = ['-created_at']
 
 
 class ScheduleViewSet(viewsets.ModelViewSet):
-    queryset = Schedule.objects.all().order_by('-created_at')
+    queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+
+    # Explicitly specify which fields the API may be ordered against
+
+    # This will be used as the default ordering
+    ordering = ['-created_at']
 
 
 class AllScheduleViewSet(viewsets.ModelViewSet):
-    queryset = Schedule.objects.all().order_by('-created_at')
+    queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
     pagination_class = LargeResultsSetPagination
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+
+    # Explicitly specify which fields the API may be ordered against
+
+    # This will be used as the default ordering
+    ordering = ['-created_at']
 
 
 # Register API
