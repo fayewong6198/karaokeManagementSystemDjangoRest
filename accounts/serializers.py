@@ -22,7 +22,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'gender', 'monthly_salary',
+        fields = ['id', 'username', 'email', 'gender', 'monthly_salary', 'salary',
                   'role', 'schedules', 'is_staff', 'created_at']
 
     def update(self, instance, validated_data):
