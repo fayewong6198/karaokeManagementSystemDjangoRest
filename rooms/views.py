@@ -15,8 +15,9 @@ class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-
+    filter_backends = (DjangoFilterBackend,
+                       filters.OrderingFilter, filters.SearchFilter)
+    search_fields = ['roomId', 'price', 'status', 'id']
     # Explicitly specify which fields the API may be ordered against
 
     # This will be used as the default ordering
@@ -31,7 +32,10 @@ class AllRoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = LargeResultsSetPagination
-    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    filter_backends = (DjangoFilterBackend,
+                       filters.OrderingFilter, filters.SearchFilter)
+
+    search_fields = ['roomId', 'price', 'status', 'id']
 
     # Explicitly specify which fields the API may be ordered against
 
@@ -44,7 +48,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
-    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    filter_backends = (DjangoFilterBackend,
+                       filters.OrderingFilter, filters.SearchFilter)
+    search_fields = ['id', 'sku', 'productName', 'category', 'price']
 
     # Explicitly specify which fields the API may be ordered against
 
@@ -180,34 +186,45 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
         Update Payment.
         """
         instance = get_object_or_404(Payment, pk=pk)
-        if instance.status == "checkedOut":
-            return Response({"msg": "The payment can not be modified"})
+        # if instance.status == "checkedOut":
+        #     return Response({"msg": "The payment can not be modified"})
         serializer = PaymentSerializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
 
         instance.save()
+        # add quantity before delete
+        for productUsed in ProductUsed.objects.all().filter(payment=instance):
+            product_used = ProductUsedSerializer(productUsed)
+            product = Product.objects.all().get(
+                pk=product_used["productId"].value)
+            product.stock = product.stock + \
+                float(product_used["quantity"].value)
+
+            product.save()
+
         # Delete old product
         ProductUsed.objects.filter(payment=instance).delete()
 
         # Update schedule for user
         for product in request.data["products"]:
             product["payment"] = instance.id
+            # Check id of product
             productUsed = get_object_or_404(Product, pk=product["productId"])
+            # Serializer
             product_used_serializer = ProductUsedSerializer(data=product)
             product_used_serializer.is_valid(raise_exception=True)
             new_product_used = product_used_serializer.save()
 
-        if instance.status == "checkedOut":
-            # change stock in product
-            for productUsed in instance.products.all():
-                product_used = ProductUsedSerializer(productUsed)
-                id = product_used["productId"].value
+        # Update product stock
+        for productUsed in instance.products.all():
+            product_used = ProductUsedSerializer(productUsed)
+            id = product_used["productId"].value
 
-                product = get_object_or_404(Product, pk=id)
+            product = get_object_or_404(Product, pk=id)
 
-                product.stock = product.stock - productUsed.quantity
-                product.save()
+            product.stock = product.stock - productUsed.quantity
+            product.save()
 
         return Response(PaymentSerializer(instance=instance).data)
 

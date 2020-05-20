@@ -33,6 +33,10 @@ class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
         if sort_by and sort_by in my_model_fields:
             instance = instance.order_by(sort_by)
 
+        # if 'search' in request.query_params:
+        #     search = request.query_params.get('search')
+        #     instance = instance.filter(username__icontains=search)
+
         page = self.paginate_queryset(instance)
         if page is not None:
             serializer = self.get_paginated_response(UserSerializer(page,

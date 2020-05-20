@@ -66,6 +66,10 @@ class PaymentSerializer(serializers.ModelSerializer):
         instance.status = validated_data["status"]
 
         instance.checkInDate = validated_data["checkInDate"]
-        instance.checkOutDate = validated_data["checkOutDate"]
+
+        if "checkOutDate" in validated_data:
+            instance.checkOutDate = validated_data["checkOutDate"]
+        else:
+            instance.checkOutDate = None
 
         return instance
