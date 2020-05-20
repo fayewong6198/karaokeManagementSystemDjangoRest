@@ -53,7 +53,10 @@ class PaymentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         payment = Payment()
         payment.checkInDate = validated_data["checkInDate"]
-        payment.checkOutDate = validated_data["checkOutDate"]
+        if "checkOutDate" in validated_data:
+            payment.checkOutDate = validated_data["checkOutDate"]
+        else:
+            payment.checkOutDate = None
         payment.status = validated_data["status"]
         payment.room = validated_data["room"]
 
