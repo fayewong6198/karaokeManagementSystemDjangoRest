@@ -30,6 +30,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'username', instance.username)
         instance.email = validated_data.get('email', instance.email)
         instance.gender = validated_data.get('gender', instance.gender)
+        instance.salary = validated_data.get('salary', instance.salary)
+        instance.is_staff = validated_data.get('is_staff', instance.salary)
 
         return instance
 
