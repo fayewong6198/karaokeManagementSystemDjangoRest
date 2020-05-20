@@ -50,7 +50,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
     filter_backends = (DjangoFilterBackend,
                        filters.OrderingFilter, filters.SearchFilter)
-    search_fields = ['id', 'sku', 'productName', 'category', 'price']
+    search_fields = ['id', 'sku', 'productName', 'price']
 
     # Explicitly specify which fields the API may be ordered against
 
