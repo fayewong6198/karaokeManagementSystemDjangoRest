@@ -78,7 +78,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     salary = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 
     def get_monthly_salary(self):
-        return self.salary * decimal.Decimal(4.35) * decimal.Decimal(len(self.schedules.all()))
+        return round(self.salary * decimal.Decimal(4.35) * decimal.Decimal(len(self.schedules.all())), 2)
 
     monthly_salary = property(get_monthly_salary)
     objects = UserManager()
