@@ -18,6 +18,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,
                        filters.OrderingFilter, filters.SearchFilter)
     search_fields = ['roomId', 'price', 'status', 'id']
+    filterset_fields = ['status']
     # Explicitly specify which fields the API may be ordered against
 
     # This will be used as the default ordering
@@ -51,7 +52,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,
                        filters.OrderingFilter, filters.SearchFilter)
     search_fields = ['id', 'sku', 'productName', 'price']
-
+    filterset_fields = ['productName', 'sku']
     # Explicitly specify which fields the API may be ordered against
 
     # This will be used as the default ordering
@@ -61,6 +62,19 @@ class ProductViewSet(viewsets.ModelViewSet):
 class AllProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all().order_by('-created_at')
     serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = LargeResultsSetPagination
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+
+    # Explicitly specify which fields the API may be ordered against
+
+    # This will be used as the default ordering
+    ordering = ['-created_at']
+
+
+class AllPaymentViewSet(viewsets.ModelViewSet):
+    queryset = Payment.objects.all().order_by('-created_at')
+    serializer_class = PaymentSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = LargeResultsSetPagination
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
@@ -114,13 +128,19 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         """
         Return a list of all users.
         """
-        instance = Payment.objects.all().order_by('-created_at')
+        instance = Payment.objects.all()
 
         sort_by = request.query_params.get('ordering')
 
         my_model_fields = [field.name for field in Payment._meta.get_fields()]
         if sort_by and sort_by in my_model_fields:
             instance = instance.order_by(sort_by)
+
+        status = request.query_params.get('status')
+
+        if status is not None:
+            print(status)
+            instance = instance.filter(status=status)
 
         page = self.paginate_queryset(instance)
 

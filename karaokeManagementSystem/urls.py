@@ -38,6 +38,7 @@ router.register(r'allCategories', rooms_views.AllCategoryViewSet)
 # router.register(r'payments', rooms_views.PaymentViewSet)
 router.register(r'allRooms', rooms_views.AllRoomViewSet)
 router.register(r'allUsers', accounts_views.AllUserViewSet)
+router.register(r'allPayments', rooms_views.AllPaymentViewSet)
 
 urlpatterns = [
     path('', include('accounts.urls')),
