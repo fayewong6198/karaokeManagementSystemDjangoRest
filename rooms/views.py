@@ -12,7 +12,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = Room.objects.all().filter(status='notAvailable')
+    queryset = Room.objects.all()
     serializer_class = RoomSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = (DjangoFilterBackend,
@@ -28,7 +28,7 @@ class AllRoomViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = Room.objects.all().order_by('-created_at')
+    queryset = Room.objects.all().filter(status='available')
     serializer_class = RoomSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = LargeResultsSetPagination
@@ -142,13 +142,21 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
         room = get_object_or_404(Room, pk=payment.room)
 
-        if (room.status == 'available'):
+        if (room.status == 'notAvailable'):
             return Response({"msg": "Room is not available"})
+
+        room.status = 'notAvailable'
+
+        room.save()
 
         payment.save()
         # Create schedule for user
         for product in request.data["products"]:
-            print("ccccc")
+            room = get_object_or_404(Room, pk=payment.room)
+
+            room.status = 'notAvailable'
+
+            room.save()
             product["payment"] = payment.id
             print(payment.id)
             product_used_serializer = ProductUsedSerializer(data=product)
@@ -156,6 +164,11 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
             new_product_used = product_used_serializer.save()
 
         if payment.status == "checkedOut":
+            room = get_object_or_404(Room, pk=payment.room)
+
+            room.status = 'notAvailable'
+
+            room.save()
             # change stock in product
             for productUsed in payment.products.all():
                 product_used = ProductUsedSerializer(productUsed)
