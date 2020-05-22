@@ -141,7 +141,8 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
         if 'status' in request.query_params:
             status = request.query_params.get('status')
-            instance = instance.filter(status=status)
+            if status:
+                instance = instance.filter(status=status)
 
         page = self.paginate_queryset(instance)
 
