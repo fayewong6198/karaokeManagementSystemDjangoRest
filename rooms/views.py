@@ -128,7 +128,7 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         """
         Return a list of all users.
         """
-        instance = Payment.objects.all()
+        instance = Payment.objects.all().order_by('created_at')
 
         my_model_fields = [field.name for field in Payment._meta.get_fields()]
 
