@@ -132,21 +132,23 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
         sort_by = request.query_params.get('ordering')
 
-        my_model_fields = [field.name for field in Payment._meta.get_fields()]
-        if sort_by and sort_by in my_model_fields:
-            instance = instance.order_by(sort_by)
+        print(sort_by)
 
-        status = request.query_params.get('status')
-        if status != "":
-            print(status)
-            instance = instance.filter(status=status)
+        my_model_fields = [field.name for field in Payment._meta.get_fields()]
+        print(my_model_fields)
+        if sort_by and sort_by in my_model_fields or sort_by[1:] in my_model_fields:
+            print("cc")
+            instance = instance.order_by(sort_by)
 
         page = self.paginate_queryset(instance)
 
-        if page is not None:
+        if 'status' in request.query_params:
+            status = request.query_params.get('status')
+            instance = instance.filter(status=status)
 
+        if page is not None:
             serializer = self.get_paginated_response(PaymentSerializer(
-                instance=page, context={'request': request}, many=True).data)
+                instance=instance, context={'request': request}, many=True).data)
         else:
             serializer = PaymentSerializer(
                 instance, many=True)

@@ -30,7 +30,8 @@ class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
         sort_by = request.query_params.get('ordering')
 
         my_model_fields = [field.name for field in User._meta.get_fields()]
-        if sort_by and sort_by in my_model_fields:
+        print(my_model_fields)
+        if sort_by and sort_by[1:] in my_model_fields or sort_by in my_model_fields:
             instance = instance.order_by(sort_by)
 
         if 'search' in request.query_params:
