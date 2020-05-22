@@ -12,7 +12,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = Room.objects.all()
+    queryset = Room.objects.all().filter(status='notAvailable')
     serializer_class = RoomSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = (DjangoFilterBackend,
@@ -140,6 +140,11 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         serializer.is_valid(raise_exception=True)
         payment = serializer.save()
 
+        room = get_object_or_404(Room, pk=payment.room)
+
+        if (room.status == 'available'):
+            return Response({"msg": "Room is not available"})
+
         payment.save()
         # Create schedule for user
         for product in request.data["products"]:
@@ -153,7 +158,6 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         if payment.status == "checkedOut":
             # change stock in product
             for productUsed in payment.products.all():
-                print("dasdas")
                 product_used = ProductUsedSerializer(productUsed)
                 id = product_used["productId"].value
                 product = get_object_or_404(
