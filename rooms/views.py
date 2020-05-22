@@ -137,8 +137,7 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
             instance = instance.order_by(sort_by)
 
         status = request.query_params.get('status')
-
-        if status is not None:
+        if status != "":
             print(status)
             instance = instance.filter(status=status)
 
