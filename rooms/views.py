@@ -228,6 +228,13 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
 
+        if (request.data['status'] == 'checkedOut'):
+            room = get_object_or_404(Room, pk=instance.room.id)
+
+            room.status = 'available'
+
+            room.save()
+
         instance.save()
         # add quantity before delete
         for productUsed in ProductUsed.objects.all().filter(payment=instance):
