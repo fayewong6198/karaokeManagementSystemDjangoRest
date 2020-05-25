@@ -156,12 +156,13 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
+        print("1")
         serializer_class = ProductSerializer
         serializer = PaymentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payment = serializer.save()
 
-        room = get_object_or_404(Room, pk=payment.room)
+        room = get_object_or_404(Room, pk=request.data['room'])
 
         if (room.status == 'notAvailable'):
             return Response({"msg": "Room is not available"})
@@ -169,23 +170,20 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         room.status = 'notAvailable'
 
         room.save()
-
+        print("2")
         payment.save()
+        print("3")
         # Create schedule for user
         for product in request.data["products"]:
-            room = get_object_or_404(Room, pk=payment.room)
-
-            room.status = 'notAvailable'
-
-            room.save()
+            print("4")
             product["payment"] = payment.id
             print(payment.id)
             product_used_serializer = ProductUsedSerializer(data=product)
             product_used_serializer.is_valid(raise_exception=True)
             new_product_used = product_used_serializer.save()
-
+            print("3")
         if payment.status == "checkedOut":
-            room = get_object_or_404(Room, pk=payment.room)
+            room = get_object_or_404(Room, pk=payment.room.id)
 
             room.status = 'notAvailable'
 
@@ -199,7 +197,7 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
                 product.stock = product.stock - productUsed.quantity
                 product.save()
-
+        print("1")
         return Response(
             PaymentSerializer(payment).data
         )

@@ -58,6 +58,7 @@ class PaymentSerializer(serializers.ModelSerializer):
         else:
             payment.checkOutDate = None
         payment.status = validated_data["status"]
+
         payment.room = validated_data["room"]
 
         return payment
