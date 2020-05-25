@@ -11,6 +11,8 @@ from django.core.paginator import Paginator
 from .pagination import StandardResultsSetPagination, PaginationHandlerMixin, LargeResultsSetPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
+from rest_framework import status
+
 
 class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
     """
@@ -148,10 +150,16 @@ class RegisterAPI(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
+
         print(request.data)
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+
+        if serializer.is_valid() == False:
+            print("FALSE")
+            return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        print("before save user")
         user = serializer.save()
+        print("save user")
         return Response({
             'user': UserSerializer(user, context=self.get_serializer_context()).data,
             'token': AuthToken.objects.create(user)[1]

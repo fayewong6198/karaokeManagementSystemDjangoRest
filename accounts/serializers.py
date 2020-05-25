@@ -1,6 +1,7 @@
 from .models import User, Schedule
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from rest_framework.response import Response
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
@@ -44,6 +45,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
+
         user = User.objects.create_user(
             validated_data['username'], validated_data['email'], validated_data['password'])
 
