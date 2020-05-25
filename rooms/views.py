@@ -170,34 +170,42 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         room.status = 'notAvailable'
 
         room.save()
-        print("2")
+
         payment.save()
-        print("3")
-        # Create schedule for user
         for product in request.data["products"]:
-            print("4")
+
             product["payment"] = payment.id
-            print(payment.id)
+
+            _product = get_object_or_404(Product, pk=product['productId'])
+
             product_used_serializer = ProductUsedSerializer(data=product)
             product_used_serializer.is_valid(raise_exception=True)
             new_product_used = product_used_serializer.save()
-            print("3")
+
+            # Update product stock
+
+            print("--------------------------------------")
+            print(new_product_used.quantity)
+
+            _product.stock = _product.stock - new_product_used.quantity
+            _product.save()
+
         if payment.status == "checkedOut":
             room = get_object_or_404(Room, pk=payment.room.id)
 
             room.status = 'available'
 
             room.save()
-            # change stock in product
-            for productUsed in payment.products.all():
-                product_used = ProductUsedSerializer(productUsed)
-                id = product_used["productId"].value
-                product = get_object_or_404(
-                    Product, pk=id)
+            # # change stock in product
+            # for productUsed in payment.products.all():
+            #     product_used = ProductUsedSerializer(productUsed)
+            #     id = product_used["productId"].value
+            #     product = get_object_or_404(
+            #         Product, pk=id)
 
-                product.stock = product.stock - productUsed.quantity
-                product.save()
-        print("1")
+            #     product.stock = product.stock - productUsed.quantity
+            #     product.save()
+
         return Response(
             PaymentSerializer(payment).data
         )
@@ -249,7 +257,7 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
         # Delete old product
         ProductUsed.objects.filter(payment=instance).delete()
 
-        # Update schedule for user
+        # Create new product used
         for product in request.data["products"]:
             product["payment"] = instance.id
             # Check id of product
