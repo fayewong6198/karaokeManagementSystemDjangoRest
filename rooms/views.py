@@ -185,7 +185,7 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         if payment.status == "checkedOut":
             room = get_object_or_404(Room, pk=payment.room.id)
 
-            room.status = 'notAvailable'
+            room.status = 'available'
 
             room.save()
             # change stock in product
