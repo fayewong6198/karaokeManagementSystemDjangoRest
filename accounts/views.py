@@ -113,21 +113,26 @@ class AllUserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = LargeResultsSetPagination
-    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
 
     # Explicitly specify which fields the API may be ordered against
 
-    # This will be used as the default ordering
+    filter_backends = (DjangoFilterBackend,
+                       filters.OrderingFilter, filters.SearchFilter)
+
     ordering = ['-created_at']
 
 
 class ScheduleViewSet(viewsets.ModelViewSet):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
-    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    filter_backends = (DjangoFilterBackend,
+                       filters.OrderingFilter, filters.SearchFilter)
 
     # Explicitly specify which fields the API may be ordered against
 
+    search_fields = ['weekDay', 'workingTime']
+    filterset_fields = ['weekDay', 'workingTime']
+    # This will be used as the default ordering
     # This will be used as the default ordering
     ordering = ['-created_at']
 
