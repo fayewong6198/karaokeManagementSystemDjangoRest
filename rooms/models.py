@@ -53,7 +53,7 @@ class Product(models.Model):
 
 class Payment(models.Model):
     room = models.ForeignKey(
-        Room, on_delete=models.DO_NOTHING, related_name="payments")
+        Room, on_delete=models.CASCADE, related_name="payments")
 
     checkInDate = models.DateTimeField(default=datetime.now)
     checkOutDate = models.DateTimeField(null=True, blank=True)
