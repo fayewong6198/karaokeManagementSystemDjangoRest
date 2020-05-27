@@ -133,10 +133,9 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         my_model_fields = [field.name for field in Payment._meta.get_fields()]
 
         if 'ordering' in request.query_params:
-            print("cc")
+
             sort_by = request.query_params.get('ordering')
             if sort_by is not None and sort_by in my_model_fields or sort_by[1:] in my_model_fields:
-                print("cc----------------------------------------------------------")
                 instance = instance.order_by(sort_by)
 
         if 'status' in request.query_params:
@@ -156,7 +155,6 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        print("1")
         serializer_class = ProductSerializer
         serializer = PaymentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -184,9 +182,6 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
             # Update product stock
 
-            print("--------------------------------------")
-            print(new_product_used.quantity)
-
             _product.stock = _product.stock - new_product_used.quantity
             _product.save()
 
@@ -196,15 +191,6 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
             room.status = 'available'
 
             room.save()
-            # # change stock in product
-            # for productUsed in payment.products.all():
-            #     product_used = ProductUsedSerializer(productUsed)
-            #     id = product_used["productId"].value
-            #     product = get_object_or_404(
-            #         Product, pk=id)
-
-            #     product.stock = product.stock - productUsed.quantity
-            #     product.save()
 
         return Response(
             PaymentSerializer(payment).data
@@ -281,6 +267,8 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
     def delete(selt, request, format=None, pk=None):
         payment = get_object_or_404(Payment, pk=pk)
-        print(Payment)
+        room = get_object_or_404(Room, pk=payment.room.id)
+        room.status = 'available'
+        room.save()
         payment_deleted = payment.delete()
         return Response({'msg': payment_deleted})
