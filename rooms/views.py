@@ -158,10 +158,9 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         serializer_class = ProductSerializer
         serializer = PaymentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        print(serializer.is_valid(raise_exception=True))
         payment = serializer.save()
-
         room = get_object_or_404(Room, pk=request.data['room'])
-
         if (room.status == 'notAvailable'):
             return Response({"msg": "Room is not available"})
 

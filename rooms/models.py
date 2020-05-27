@@ -68,8 +68,7 @@ class Payment(models.Model):
 
     status = models.CharField(
         max_length=31,
-        choices=STATUS_CHOICES,
-        default=CHECKED_IN
+        choices=STATUS_CHOICES
     )
 
     def get_total(self):
