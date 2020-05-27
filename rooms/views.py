@@ -25,11 +25,11 @@ class RoomViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
 
-class AllRoomViewSet(viewsets.ModelViewSet):
+class AllRoomViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = Room.objects.all().filter(status='available')
+    queryset = Room.objects.all()
     serializer_class = RoomSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = LargeResultsSetPagination
@@ -59,7 +59,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
 
-class AllProductViewSet(viewsets.ModelViewSet):
+class AllProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all().order_by('-created_at')
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -72,7 +72,7 @@ class AllProductViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
 
-class AllPaymentViewSet(viewsets.ModelViewSet):
+class AllPaymentViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Payment.objects.all().order_by('-created_at')
     serializer_class = PaymentSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -97,7 +97,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
 
-class AllCategoryViewSet(viewsets.ModelViewSet):
+class AllCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all().order_by('-created_at')
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticated]
