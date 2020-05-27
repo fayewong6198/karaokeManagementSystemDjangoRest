@@ -269,6 +269,16 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
         payment = get_object_or_404(Payment, pk=pk)
         room = get_object_or_404(Room, pk=payment.room.id)
         room.status = 'available'
+        if payment.status == 'checkedIn':
+            # add quantity before delete
+            for productUsed in ProductUsed.objects.all().filter(payment=payment):
+                product_used = ProductUsedSerializer(productUsed)
+                product = Product.objects.all().get(
+                    pk=product_used["productId"].value)
+                product.stock = product.stock + \
+                    float(product_used["quantity"].value)
+
+                product.save()
         room.save()
         payment_deleted = payment.delete()
         return Response({'msg': payment_deleted})
