@@ -39,7 +39,7 @@ class AllRoomViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ['roomId', 'price', 'status', 'id']
 
     # Explicitly specify which fields the API may be ordered against
-
+    filterset_fields = ['status']
     # This will be used as the default ordering
     ordering = ['-created_at']
 
