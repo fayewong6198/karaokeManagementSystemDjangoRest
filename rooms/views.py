@@ -193,6 +193,10 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
             room.save()
 
+        payment.total = payment.get_total()
+
+        payment.save()
+
         return Response(
             PaymentSerializer(payment).data
         )
@@ -265,6 +269,10 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
             product.stock = product.stock - productUsed.quantity
             product.save()
+
+        instance.total = instance.get_total()
+
+        instance.save()
 
         return Response(PaymentSerializer(instance=instance).data)
 
