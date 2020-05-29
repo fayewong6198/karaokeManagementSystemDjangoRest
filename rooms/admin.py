@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Room, Product, Payment, ProductUsed
+from .models import Room, Product, Payment, ProductUsed, Bill
 
 
 class RoomAdmin(admin.ModelAdmin):
@@ -33,3 +33,4 @@ admin.site.register(Room, RoomAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Payment, PaymentAdmin)
 admin.site.register(ProductUsed)
+admin.site.register(Bill)

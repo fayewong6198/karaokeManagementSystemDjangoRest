@@ -1,8 +1,8 @@
-from .models import Room, Product, Category, Payment, ProductUsed
+from .models import Room, Product, Category, Payment, ProductUsed, Bill
 from rest_framework import viewsets, mixins, views, filters
 from rest_framework import permissions
 from accounts.pagination import PaginationHandlerMixin, StandardResultsSetPagination, LargeResultsSetPagination
-from .serializers import RoomSerializer, ProductSerializer, CategorySerializer, PaymentSerializer, ProductUsedSerializer
+from .serializers import RoomSerializer, ProductSerializer, CategorySerializer, PaymentSerializer, ProductUsedSerializer, BillSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -158,8 +158,10 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         serializer_class = ProductSerializer
         serializer = PaymentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        print(serializer.is_valid(raise_exception=True))
+
         payment = serializer.save()
+        payment.total = payment.get_total()
+
         room = get_object_or_404(Room, pk=request.data['room'])
         if (room.status == 'notAvailable'):
             return Response({"msg": "Room is not available"})
@@ -227,6 +229,8 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
             room.status = 'available'
 
             room.save()
+
+        instance.total = instance.get_total()
 
         instance.save()
         # add quantity before delete

@@ -85,7 +85,7 @@ class Payment(models.Model):
 
         return price
 
-    total = property(get_total)
+    total = models.DecimalField(max_digits=20, decimal_places=2, default=0)
     created_at = models.DateTimeField(default=datetime.now)
 
     def __str__(self):
@@ -100,3 +100,31 @@ class ProductUsed(models.Model):
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     created_at = models.DateTimeField(default=datetime.now)
+
+
+class Bill(models.Model):
+    room = models.CharField(max_length=255)
+
+    checkInDate = models.DateTimeField(default=datetime.now)
+    checkOutDate = models.DateTimeField(null=True, blank=True)
+
+    CHECKED_IN = 'checkedIn'
+    CHECKED_OUT = 'checkedOut'
+
+    STATUS_CHOICES = (
+        (CHECKED_IN, 'CHECKED IN'),
+        (CHECKED_OUT, 'CHECKED OUT'),
+    )
+
+    products = models.TextField()
+
+    status = models.CharField(
+        max_length=31,
+        choices=STATUS_CHOICES
+    )
+
+    total = models.DecimalField(max_digits=20, decimal_places=2)
+    created_at = models.DateTimeField(default=datetime.now)
+
+    def __str__(self):
+        return self.status

@@ -1,4 +1,4 @@
-from .models import Room, Product, Category, Payment, ProductUsed
+from .models import Room, Product, Category, Payment, ProductUsed, Bill
 from rest_framework import serializers
 
 
@@ -72,5 +72,11 @@ class PaymentSerializer(serializers.ModelSerializer):
             instance.checkOutDate = validated_data["checkOutDate"]
         else:
             instance.checkOutDate = None
-
         return instance
+
+
+class BillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bill
+        fields = ['id', 'room', 'checkInDate', 'status', 'products',
+                  'checkOutDate', 'total']
