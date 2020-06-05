@@ -79,6 +79,8 @@ class Payment(models.Model):
         print(diff)
         price = self.room.price * diff
 
+        
+
         for product in self.products.all():
             price = decimal.Decimal(
                 price) + product.productId.price * product.quantity
