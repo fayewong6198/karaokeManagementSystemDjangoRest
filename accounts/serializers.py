@@ -48,7 +48,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         user = User.objects.create_user(
             validated_data['username'], validated_data['email'], validated_data['password'])
-        user.is_staff = validated_data['is_staff']
+        print(validated_data)
+        if 'is_staff' in validated_data:
+            user.is_staff = validated_data['is_staff']
 
         return user
 

@@ -20,8 +20,16 @@ class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
     """
     queryset = User.objects.all().order_by('-created_at')
 
-    permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
+
+    def get_permissions(self):
+
+        if self.request.method == 'POST':
+            permission_classes = [permissions.IsAdminUser]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+
+        return [permission() for permission in permission_classes]
 
     def get(self, request, format=None):
         """
@@ -51,6 +59,11 @@ class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
+        permission_classes = [permissions.IsAdminUser, ]
+
+        print("----------------------------------------------")
+        print(request.user)
+
         serializer_class = RegisterSerializer
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -71,7 +84,16 @@ class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
 
 class RetriveUserViewSet(views.APIView, PaginationHandlerMixin):
 
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            permission_classes = [permissions.IsAdminUser]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+
+        return [permission() for permission in permission_classes]
+
     def get(self, request, format=None, pk=None):
+        permission_classes = [permissions.IsAuthenticated]
         """
         Return a single user.
         """
@@ -81,6 +103,7 @@ class RetriveUserViewSet(views.APIView, PaginationHandlerMixin):
         return Response({'result': serializer.data})
 
     def put(self, request, format=None, pk=None):
+        permission_classes = [permissions.IsAdminUser, ]
         """
         Update User.
         """
@@ -103,6 +126,7 @@ class RetriveUserViewSet(views.APIView, PaginationHandlerMixin):
         return Response(UserSerializer(instance=instance).data)
 
     def delete(selt, request, format=None, pk=None):
+        permission_classes = [permissions.IsAdminUser]
         user = get_object_or_404(User, pk=pk)
         print(user)
         user.delete()
@@ -128,6 +152,14 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,
                        filters.OrderingFilter, filters.SearchFilter)
 
+    def get_permissions(self):
+        if self.action in ['update', 'delete', 'create']:
+            permission_classes = [permissions.IsAdminUser, ]
+        else:
+            permission_classes = [permissions.IsAuthenticated, ]
+
+        return [permission() for permission in permission_classes]
+
     # Explicitly specify which fields the API may be ordered against
 
     search_fields = ['weekDay', 'workingTime']
@@ -137,7 +169,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
 
-class AllScheduleViewSet(viewsets.ModelViewSet):
+class AllScheduleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
     pagination_class = LargeResultsSetPagination

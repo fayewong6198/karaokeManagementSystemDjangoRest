@@ -6,6 +6,9 @@ from .serializers import RoomSerializer, ProductSerializer, CategorySerializer, 
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import status
+from decimal import *
 
 
 class RoomViewSet(viewsets.ModelViewSet):
@@ -164,13 +167,26 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
         room = get_object_or_404(Room, pk=request.data['room'])
         if (room.status == 'notAvailable'):
-            return Response({"msg": "Room is not available"})
+            return Response({"msg": "Room is not available"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # check stock in product:
+        for product in request.data["products"]:
+            print("--------------------------------------")
+            print(product)
+            _product = get_object_or_404(Product, pk=product['productId'])
+
+            product_used_serializer = ProductUsedSerializer(data=product)
+
+            # check Stock
+            if _product.stock - Decimal(product['quantity']) < 0:
+                return Response({'msg': 'out of stock'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         room.status = 'notAvailable'
 
         room.save()
 
         payment.save()
+
         for product in request.data["products"]:
 
             product["payment"] = payment.id
@@ -237,13 +253,38 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
         instance.total = instance.get_total()
 
         instance.save()
+
+        # check stock
+        for product in request.data["products"]:
+            print("--------------------------------------")
+            print(product)
+            # Check id of product
+            productUsed = get_object_or_404(Product, pk=product["productId"])
+            # Serializer
+            product_used_serializer = ProductUsedSerializer(data=product)
+            print(100)
+
+            print(200)
+            try:
+                print(1)
+                exitsProduct = ProductUsed.objects.all().get(
+                    payment=instance, productId=product["productId"])
+                if productUsed.stock + exitsProduct.quantity - Decimal(product['quantity']) < 0:
+                    return Response({'msg': 'Out of Stock'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                print(2)
+            except ObjectDoesNotExist:
+                print(3)
+                print("Does not exits")
+                if productUsed.stock - Decimal(product['quantity']) < 0:
+                    return Response({'msg': 'Out of Stock'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         # add quantity before delete
         for productUsed in ProductUsed.objects.all().filter(payment=instance):
             product_used = ProductUsedSerializer(productUsed)
             product = Product.objects.all().get(
                 pk=product_used["productId"].value)
             product.stock = product.stock + \
-                float(product_used["quantity"].value)
+                Decimal(product_used["quantity"].value)
 
             product.save()
 
@@ -287,7 +328,7 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
                 product = Product.objects.all().get(
                     pk=product_used["productId"].value)
                 product.stock = product.stock + \
-                    float(product_used["quantity"].value)
+                    Decimal(product_used["quantity"].value)
 
                 product.save()
         room.save()
