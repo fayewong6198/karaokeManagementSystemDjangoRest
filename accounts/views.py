@@ -23,8 +23,7 @@ class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
     pagination_class = StandardResultsSetPagination
 
     def get_permissions(self):
-
-        if self.request.method == 'POST':
+        if self.request.method in ['POST']:
             permission_classes = [permissions.IsAdminUser]
         else:
             permission_classes = [permissions.IsAuthenticated]
@@ -59,7 +58,6 @@ class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        permission_classes = [permissions.IsAdminUser, ]
 
         print("----------------------------------------------")
         print(request.user)
@@ -71,11 +69,12 @@ class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
         AuthToken.objects.create(user)[1]
 
         # Create schedule for user
-        for schedule in request.data["schedules"]:
-            schedule["staff"] = user.id
-            schedule_serializer = ScheduleSerializer(data=schedule)
-            schedule_serializer.is_valid(raise_exception=True)
-            new_schedule = schedule_serializer.save()
+        if 'schedules' in request.data:
+            for schedule in request.data["schedules"]:
+                schedule["staff"] = user.id
+                schedule_serializer = ScheduleSerializer(data=schedule)
+                schedule_serializer.is_valid(raise_exception=True)
+                new_schedule = schedule_serializer.save()
 
         return Response({
             'user': UserSerializer(user).data
@@ -93,7 +92,6 @@ class RetriveUserViewSet(views.APIView, PaginationHandlerMixin):
         return [permission() for permission in permission_classes]
 
     def get(self, request, format=None, pk=None):
-        permission_classes = [permissions.IsAuthenticated]
         """
         Return a single user.
         """
@@ -103,7 +101,6 @@ class RetriveUserViewSet(views.APIView, PaginationHandlerMixin):
         return Response({'result': serializer.data})
 
     def put(self, request, format=None, pk=None):
-        permission_classes = [permissions.IsAdminUser, ]
         """
         Update User.
         """
@@ -126,7 +123,7 @@ class RetriveUserViewSet(views.APIView, PaginationHandlerMixin):
         return Response(UserSerializer(instance=instance).data)
 
     def delete(selt, request, format=None, pk=None):
-        permission_classes = [permissions.IsAdminUser]
+
         user = get_object_or_404(User, pk=pk)
         print(user)
         user.delete()
@@ -188,11 +185,11 @@ class RegisterAPI(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
 
-        print(request.data)
+        print("CON CAC")
         serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid() == False:
-            print("FALSE")
+
             return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         print("before save user")
         user = serializer.save()
@@ -209,7 +206,7 @@ class LoginAPI(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
-        print(request.data)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
