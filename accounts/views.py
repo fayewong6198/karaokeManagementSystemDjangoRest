@@ -65,12 +65,15 @@ class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
         serializer_class = RegisterSerializer
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        serializer.is_staff = request.data['is_staff']
         user = serializer.save()
+        user.save()
         AuthToken.objects.create(user)[1]
 
         # Create schedule for user
         if 'schedules' in request.data:
             for schedule in request.data["schedules"]:
+
                 schedule["staff"] = user.id
                 schedule_serializer = ScheduleSerializer(data=schedule)
                 schedule_serializer.is_valid(raise_exception=True)
@@ -110,6 +113,16 @@ class RetriveUserViewSet(views.APIView, PaginationHandlerMixin):
         instance = serializer.save()
 
         instance.save()
+
+        # Check duplicate schedule
+        for schedule in request.data["schedules"]:
+            count = 0
+            for schedule_2 in request.data["schedules"]:
+                if schedule['workingTime'] == schedule_2['workingTime'] and schedule['weekDay'] == schedule_2['weekDay']:
+                    count = count + 1
+                if count == 2:
+                    return Response({'Schedule': [{"Schedule already exits"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         # Delete old schedule
         Schedule.objects.filter(staff=instance).delete()
 
@@ -150,7 +163,8 @@ class ScheduleViewSet(viewsets.ModelViewSet):
                        filters.OrderingFilter, filters.SearchFilter)
 
     def get_permissions(self):
-        if self.action in ['update', 'delete', 'create']:
+        print(self.action)
+        if self.action in ['update', 'destroy', 'create']:
             permission_classes = [permissions.IsAdminUser, ]
         else:
             permission_classes = [permissions.IsAuthenticated, ]

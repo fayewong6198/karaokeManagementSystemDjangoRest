@@ -50,7 +50,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             validated_data['username'], validated_data['email'], validated_data['password'])
         print(validated_data)
         if 'is_staff' in validated_data:
+            print("DIT ME MAY")
             user.is_staff = validated_data['is_staff']
+            print(user.is_staff)
 
         return user
 
