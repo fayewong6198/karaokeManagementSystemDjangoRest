@@ -166,6 +166,7 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
         payment.total = payment.get_total()
 
         room = get_object_or_404(Room, pk=request.data['room'])
+        payment.price = room.price
         if (room.status == 'notAvailable'):
             return Response({"Room": [{"msg": "Room is not available"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

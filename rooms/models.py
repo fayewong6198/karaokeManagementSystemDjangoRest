@@ -55,6 +55,8 @@ class Payment(models.Model):
     room = models.ForeignKey(
         Room, on_delete=models.CASCADE, related_name="payments")
 
+    price = models.DecimalField(max_digits=20, decimal_places=2, default=0)
+
     checkInDate = models.DateTimeField(default=datetime.now)
     checkOutDate = models.DateTimeField(null=True, blank=True)
 
