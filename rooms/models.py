@@ -79,8 +79,6 @@ class Payment(models.Model):
         print(diff)
         price = self.room.price * diff
 
-        
-
         for product in self.products.all():
             price = decimal.Decimal(
                 price) + product.productId.price * product.quantity
@@ -100,6 +98,8 @@ class ProductUsed(models.Model):
     productId = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="payments")
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    price = models.DecimalField(max_digits=20, decimal_places=2, default=0)
 
     created_at = models.DateTimeField(default=datetime.now)
 

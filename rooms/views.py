@@ -167,19 +167,17 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
         room = get_object_or_404(Room, pk=request.data['room'])
         if (room.status == 'notAvailable'):
-            return Response({"msg": "Room is not available"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"Room": [{"msg": "Room is not available"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # check stock in product:
         for product in request.data["products"]:
-            print("--------------------------------------")
-            print(product)
             _product = get_object_or_404(Product, pk=product['productId'])
 
             product_used_serializer = ProductUsedSerializer(data=product)
 
             # check Stock
             if _product.stock - Decimal(product['quantity']) < 0:
-                return Response({'msg': 'out of stock'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({'Products': [{"quantity": "There is only " + str(productUsed.stock) + " products left"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         room.status = 'notAvailable'
 
@@ -194,6 +192,7 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
             _product = get_object_or_404(Product, pk=product['productId'])
 
             product_used_serializer = ProductUsedSerializer(data=product)
+            product_used_serializer.price = _product.price
             product_used_serializer.is_valid(raise_exception=True)
             new_product_used = product_used_serializer.save()
 
@@ -226,7 +225,8 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
         """
         Return a single user.
         """
-        instance = get_object_or_404(Payment, pk=pk)
+        instance = get_object_or_404(
+            Payment, pk=pk)
 
         serializer = PaymentSerializer(
             instance=instance, context={'request': request})
@@ -256,27 +256,23 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
         # check stock
         for product in request.data["products"]:
-            print("--------------------------------------")
-            print(product)
+
             # Check id of product
             productUsed = get_object_or_404(Product, pk=product["productId"])
             # Serializer
             product_used_serializer = ProductUsedSerializer(data=product)
-            print(100)
 
-            print(200)
             try:
-                print(1)
+
                 exitsProduct = ProductUsed.objects.all().get(
                     payment=instance, productId=product["productId"])
                 if productUsed.stock + exitsProduct.quantity - Decimal(product['quantity']) < 0:
-                    return Response({'msg': 'Out of Stock'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-                print(2)
+                    return Response({'Products': [{"quantity": "There is only " + str(productUsed.stock) + " products left"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
             except ObjectDoesNotExist:
-                print(3)
-                print("Does not exits")
+
                 if productUsed.stock - Decimal(product['quantity']) < 0:
-                    return Response({'msg': 'Out of Stock'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    return Response({'Products': [{"quantity": "Product is not exits"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # add quantity before delete
         for productUsed in ProductUsed.objects.all().filter(payment=instance):
@@ -298,6 +294,7 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
             productUsed = get_object_or_404(Product, pk=product["productId"])
             # Serializer
             product_used_serializer = ProductUsedSerializer(data=product)
+            product_used_serializer.price = productUsed.price
             product_used_serializer.is_valid(raise_exception=True)
             new_product_used = product_used_serializer.save()
 
