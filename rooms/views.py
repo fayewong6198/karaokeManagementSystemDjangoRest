@@ -272,7 +272,7 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
             except ObjectDoesNotExist:
 
                 if productUsed.stock - Decimal(product['quantity']) < 0:
-                    return Response({'Products': [{"quantity": "Product is not exits"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    return Response({'Products': [{"quantity": "There is only " + str(productUsed.stock) + " products left"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # add quantity before delete
         for productUsed in ProductUsed.objects.all().filter(payment=instance):

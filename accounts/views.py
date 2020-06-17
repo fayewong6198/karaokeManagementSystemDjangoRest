@@ -171,7 +171,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         user_schedules = Schedule.objects.filter(staff=user)
         for user_schedule in user_schedules:
             if user_schedule.workingTime == request.data['workingTime'] and user_schedule.weekDay == request.data['weekDay']:
-                return Response({'Schedule': [{"msg": "Schedule already exits"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({'Schedule': [{"Schedule already exits"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         serializer = self.get_serializer(data=request.data)
 
