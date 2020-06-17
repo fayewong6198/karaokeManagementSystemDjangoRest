@@ -79,7 +79,7 @@ class Payment(models.Model):
         diff = ((self.checkOutDate - self.checkInDate) / 3600)
         diff = diff.total_seconds()
         print(diff)
-        price = self.price * diff
+        price = self.price * decimal.Decimal(diff)
 
         for product in self.products.all():
             price = decimal.Decimal(
