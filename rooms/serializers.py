@@ -30,7 +30,7 @@ class InlineProductUsedSerializer(serializers.ModelSerializer):
 class ProductUsedSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductUsed
-        fields = ['id', 'payment', 'productId',
+        fields = ['id', 'payment', 'productId', 'price',
                   'quantity', 'created_at']
 
         def create(self, validated_data):
@@ -47,7 +47,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payment
-        fields = ['id', 'room', 'checkInDate', 'status',
+        fields = ['id', 'room', 'checkInDate', 'status', 'price',
                   'checkOutDate', 'products', 'total']
 
     def create(self, validated_data):
