@@ -177,7 +177,7 @@ class ListCreatePaymentViewSet(views.APIView, PaginationHandlerMixin):
 
             # check Stock
             if _product.stock - Decimal(product['quantity']) < 0:
-                return Response({'Products': [{"quantity": "There is only " + str(productUsed.stock) + " products left"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({'Products': [{"quantity": "There is only " + str(_product.stock) + " products left"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         room.status = 'notAvailable'
 
