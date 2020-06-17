@@ -165,6 +165,22 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     # This will be used as the default ordering
     ordering = ['-created_at']
 
+    def create(self, request):
+        print(request.data)
+        user = get_object_or_404(User, pk=request.data['staff'])
+        user_schedules = Schedule.objects.filter(staff=user)
+        for user_schedule in user_schedules:
+            if user_schedule.workingTime == request.data['workingTime'] and user_schedule.weekDay == request.data['weekDay']:
+                return Response({'Schedule': [{"msg": "Schedule already exits"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        schedule = serializer.save()
+
+        return Response(serializer.data)
+
 
 class AllScheduleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Schedule.objects.all()
