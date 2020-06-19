@@ -329,6 +329,11 @@ class RetrivePaymentViewSet(views.APIView, PaginationHandlerMixin):
                     Decimal(product_used["quantity"].value)
 
                 product.save()
+
+        if payment.status == 'checkedOut':
+            if request.user.is_staff == False:
+                return Response({"Authenticated": {"msg": "Unauthodized"}}, status=status.HTTP_401_UNAUTHORIZED)
+
         room.save()
         payment_deleted = payment.delete()
         return Response({'msg': payment_deleted})
