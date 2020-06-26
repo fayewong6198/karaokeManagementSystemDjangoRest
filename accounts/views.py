@@ -1,7 +1,7 @@
-from .models import User, Schedule
+from .models import User, Schedule, WeeklySchedule
 from rest_framework import viewsets, generics, mixins, views, filters
 from rest_framework import permissions
-from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, ScheduleSerializer
+from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, ScheduleSerializer, WeeklyScheduleSerializer, CreateWeeklyScheduleSerializer
 from rest_framework.response import Response
 from knox.models import AuthToken
 from django.shortcuts import get_object_or_404
@@ -208,7 +208,41 @@ class AllScheduleViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ['-created_at']
 
 
-# Register API
+""" 
+Weekly Schedule 
+
+"""
+
+
+class WeeklyScheduleViewSet(viewsets.ModelViewSet):
+    queryset = WeeklySchedule.objects.all()
+    filter_backends = (DjangoFilterBackend,
+                       filters.OrderingFilter, filters.SearchFilter)
+
+    def get_permissions(self):
+        print(self.action)
+        if self.action in ['update', 'destroy', 'create']:
+            permission_classes = [permissions.IsAdminUser, ]
+        else:
+            permission_classes = [permissions.IsAuthenticated, ]
+
+        return [permission() for permission in permission_classes]
+
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return CreateWeeklyScheduleSerializer
+        else:
+            print("else")
+            return WeeklyScheduleSerializer
+
+
+class AllWeeklyScheduleViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = WeeklySchedule.objects.all()
+    serializer_class = WeeklyScheduleSerializer
+    filter_backends = (DjangoFilterBackend,
+                       filters.OrderingFilter, filters.SearchFilter)
+
+
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]

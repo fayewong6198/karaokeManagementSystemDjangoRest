@@ -91,6 +91,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.username
 
 
+class WeeklySchedule(models.Model):
+    start = models.DateField()
+
+    created_at = models.DateTimeField(default=datetime.now)
+
+    def __str__(self):
+        return str(self.start)
+
+
 class Schedule(models.Model):
     MONDAY = 'monday'
     TUESDAY = 'tuesday'
@@ -110,6 +119,9 @@ class Schedule(models.Model):
         (SUNDAY, 'sunday'),
 
     ]
+
+    weeklySchedule = models.ForeignKey(
+        WeeklySchedule, on_delete=models.CASCADE, related_name='schedules', blank=True, null=True)
     staff = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='schedules')
     weekDay = models.CharField(

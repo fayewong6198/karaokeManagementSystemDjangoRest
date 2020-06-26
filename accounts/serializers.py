@@ -1,4 +1,4 @@
-from .models import User, Schedule
+from .models import User, Schedule, WeeklySchedule
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
@@ -12,10 +12,24 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
 
 class InlineScheduleSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Schedule
         fields = ['weekDay', 'workingTime']
+
+
+class WeeklyScheduleSerializer(serializers.ModelSerializer):
+    schedules = InlineScheduleSerializer(many=True)
+
+    class Meta:
+        model = WeeklySchedule
+        fields = ['id', 'start', 'schedules']
+
+
+class CreateWeeklyScheduleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = WeeklySchedule
+        fields = ['id', 'start']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

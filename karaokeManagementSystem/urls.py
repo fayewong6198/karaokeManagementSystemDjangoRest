@@ -27,6 +27,7 @@ router.register(r'products', rooms_views.ProductViewSet)
 router.register(r'categories', rooms_views.CategoryViewSet)
 # router.register(r'payments', rooms_views.PaymentViewSet)
 router.register(r'rooms', rooms_views.RoomViewSet)
+router.register(r'weeklySchedules', accounts_views.WeeklyScheduleViewSet)
 
 """
 Get all 
@@ -39,6 +40,7 @@ router.register(r'allCategories', rooms_views.AllCategoryViewSet)
 router.register(r'allRooms', rooms_views.AllRoomViewSet)
 router.register(r'allUsers', accounts_views.AllUserViewSet)
 router.register(r'allPayments', rooms_views.AllPaymentViewSet)
+router.register(r'allWeeklySchedule', accounts_views.AllWeeklyScheduleViewSet)
 
 urlpatterns = [
     path('', include('accounts.urls')),

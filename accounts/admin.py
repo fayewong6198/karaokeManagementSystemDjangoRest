@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User, Schedule
+from .models import User, Schedule, WeeklySchedule
 
 
 class ScheduleInline(admin.StackedInline):
@@ -18,3 +18,5 @@ class UserAdmin(admin.ModelAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Schedule)
+
+admin.site.register(WeeklySchedule)
