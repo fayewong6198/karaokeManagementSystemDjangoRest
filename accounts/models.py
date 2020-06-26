@@ -150,3 +150,18 @@ class Schedule(models.Model):
 
     def __str__(self):
         return self.weekDay
+
+
+class WeeklySalary(models.Model):
+    staff = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="weekly_salaries")
+    weeklySchedule = models.ForeignKey(
+        WeeklySchedule, on_delete=models.CASCADE, related_name="weekly_salaries")
+
+    def get_weekly_salary(self):
+        hour_salary = self.staff.salary
+        schedules = self.weeklySchedule.objects.filter(staff=self.staff)
+
+        return hour_salary * schedules.count()
+
+    weekly_salary = property(get_weekly_salary)

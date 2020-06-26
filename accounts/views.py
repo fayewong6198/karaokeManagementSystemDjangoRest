@@ -1,7 +1,7 @@
 from .models import User, Schedule, WeeklySchedule
 from rest_framework import viewsets, generics, mixins, views, filters
 from rest_framework import permissions
-from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, ScheduleSerializer, WeeklyScheduleSerializer, CreateWeeklyScheduleSerializer
+from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, ScheduleSerializer, WeeklyScheduleSerializer, CreateWeeklyScheduleSerializer, WeeklyScheduleNoInline
 from rest_framework.response import Response
 from knox.models import AuthToken
 from django.shortcuts import get_object_or_404
@@ -283,7 +283,7 @@ class WeeklyScheduleViewSet(viewsets.ModelViewSet):
 
 class AllWeeklyScheduleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = WeeklySchedule.objects.all()
-    serializer_class = WeeklyScheduleSerializer
+    serializer_class = WeeklyScheduleNoInline
     filter_backends = (DjangoFilterBackend,
                        filters.OrderingFilter, filters.SearchFilter)
 
