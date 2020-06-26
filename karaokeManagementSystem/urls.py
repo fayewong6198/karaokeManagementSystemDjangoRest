@@ -40,7 +40,7 @@ router.register(r'allCategories', rooms_views.AllCategoryViewSet)
 router.register(r'allRooms', rooms_views.AllRoomViewSet)
 router.register(r'allUsers', accounts_views.AllUserViewSet)
 router.register(r'allPayments', rooms_views.AllPaymentViewSet)
-router.register(r'allWeeklySchedule', accounts_views.AllWeeklyScheduleViewSet)
+router.register(r'allWeeklySchedules', accounts_views.AllWeeklyScheduleViewSet)
 
 urlpatterns = [
     path('', include('accounts.urls')),

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'knox',
     'django_filters',
+    'background_task',
 
 ]
 
