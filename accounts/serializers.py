@@ -20,7 +20,7 @@ class InlineScheduleSerializer(serializers.ModelSerializer):
 class InlineScheduleSerializerWeekly(serializers.ModelSerializer):
     class Meta:
         model = Schedule
-        fields = ['weekDay', 'workingTime', 'staff']
+        fields = ['weekDay', 'workingTime', 'staff', 'id']
 
 
 class WeeklyScheduleSerializer(serializers.HyperlinkedModelSerializer):
