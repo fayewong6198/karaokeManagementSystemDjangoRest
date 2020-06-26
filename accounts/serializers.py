@@ -1,11 +1,10 @@
-from .models import User, Schedule, WeeklySchedule
+from .models import User, Schedule, WeeklySchedule, WeeklySalary
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Schedule
         fields = ['id', 'staff', 'weekDay', 'workingTime', 'weeklySchedule']
@@ -15,6 +14,12 @@ class InlineScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
         fields = ['weekDay', 'workingTime']
+
+
+class InlineWeekySalarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WeeklySalary
+        fields = ['staff', 'weeklySchedule', 'weeklySalary']
 
 
 class InlineScheduleSerializerWeekly(serializers.ModelSerializer):
@@ -46,11 +51,12 @@ class CreateWeeklyScheduleSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     schedules = InlineScheduleSerializer(many=True)
+    weekly_salaries = InlineWeekySalarySerializer(many=True)
 
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'gender', 'monthly_salary', 'salary',
-                  'role', 'schedules', 'is_staff', 'created_at']
+                  'role', 'schedules', 'is_staff', 'weekly_salaries', 'created_at']
 
     def update(self, instance, validated_data):
         instance.username = validated_data.get(

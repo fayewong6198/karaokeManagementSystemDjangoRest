@@ -202,7 +202,10 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     def create(self, request):
         print(request.data)
         user = get_object_or_404(User, pk=request.data['staff'])
-        user_schedules = Schedule.objects.filter(staff=user)
+        weeklySchedule = get_object_or_404(
+            WeeklySchedule, pk=reqest.data['weeklySchedule'])
+        user_schedules = Schedule.objects.filter(
+            staff=user, weeklySchedule=weeklySchedule)
         for user_schedule in user_schedules:
             if user_schedule.workingTime == request.data['workingTime'] and user_schedule.weekDay == request.data['weekDay']:
                 return Response({'Schedule': [{"Schedule already exits"}]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -273,8 +276,9 @@ class WeeklyScheduleViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         weeklySchedules = WeeklySchedule.objects.all()
+        # Run background task
         if weeklySchedules.count() == 0:
-            createWeeklyScheduleBackground(repeat=10, repeat_until=None)
+            createWeeklyScheduleBackground(repeat=60*60*24, repeat_until=None)
 
         weeklySchedule = serializer.save()
 

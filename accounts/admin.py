@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User, Schedule, WeeklySchedule
+from .models import User, Schedule, WeeklySchedule, WeeklySalary
 
 
 class ScheduleInline(admin.StackedInline):
@@ -20,3 +20,10 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Schedule)
 
 admin.site.register(WeeklySchedule)
+
+
+class WeeklySalaryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'staff', 'weeklySchedule')
+
+
+admin.site.register(WeeklySalary, WeeklySalaryAdmin)
