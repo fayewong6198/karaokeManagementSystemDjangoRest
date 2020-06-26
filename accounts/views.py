@@ -203,7 +203,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         print(request.data)
         user = get_object_or_404(User, pk=request.data['staff'])
         weeklySchedule = get_object_or_404(
-            WeeklySchedule, pk=reqest.data['weeklySchedule'])
+            WeeklySchedule, pk=request.data['weeklySchedule'])
         user_schedules = Schedule.objects.filter(
             staff=user, weeklySchedule=weeklySchedule)
         for user_schedule in user_schedules:
