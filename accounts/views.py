@@ -185,7 +185,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         print(self.action)
         if self.action in ['update', 'destroy', 'create']:
-            return False
+
             permission_classes = [permissions.IsAdminUser, ]
         else:
             permission_classes = [permissions.IsAuthenticated, ]
