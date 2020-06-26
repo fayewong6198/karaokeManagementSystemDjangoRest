@@ -14,11 +14,24 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 """ Background """
 from background_task import background
+from datetime import date, datetime
+import datetime as full_datetime
 
 
 @background(schedule=1)
 def createWeeklyScheduleBackground():
-    weeklySchedules = WeeklySchedule.objects.all()
+    current_week = date.today().isocalendar()[1]
+    weeklySchedules = WeeklySchedule.objects.filter(start__week=current_week)
+    if (weeklySchedules.count() > 0):
+        print("No")
+        return
+    else:
+        start = date.today()
+        print(start)
+        startWeek = start - full_datetime.timedelta(start.weekday())
+
+        weeklyScheule = WeeklySchedule.objects.create(start=startWeek)
+        print("create successfull")
 
 
 class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
@@ -244,13 +257,24 @@ class WeeklyScheduleViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
 
+        start = datetime.strptime(request.data['start'], '%Y-%m-%d').date()
+        print(start)
+        startWeek = start - full_datetime.timedelta(start.weekday())
+        request.data['start'] = startWeek
+
+        weeklySchedule = WeeklySchedule.objects.filter(
+            start__week=startWeek.isocalendar()[1])
+
+        if weeklySchedule.count() > 0:
+            return Response({"Weekly Schedule": [{"dupplicate": "weeklySchedule already exits"}]}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.get_serializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
 
-        createWeeklyScheduleBackground(repeat=1, repeat_until=None)
-
-        print("cc")
+        weeklySchedules = WeeklySchedule.objects.all()
+        if weeklySchedules.count() == 0:
+            createWeeklyScheduleBackground(repeat=10, repeat_until=None)
 
         weeklySchedule = serializer.save()
 
