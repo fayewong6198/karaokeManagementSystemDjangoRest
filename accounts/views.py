@@ -12,6 +12,13 @@ from .pagination import StandardResultsSetPagination, PaginationHandlerMixin, La
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import status
+""" Background """
+from background_task import background
+
+
+@background(schedule=1)
+def createWeeklyScheduleBackground():
+    weeklySchedules = WeeklySchedule.objects.all()
 
 
 class ListCreateUserViewSet(views.APIView, PaginationHandlerMixin):
@@ -234,6 +241,20 @@ class WeeklyScheduleViewSet(viewsets.ModelViewSet):
         else:
             print("else")
             return WeeklyScheduleSerializer
+
+    def create(self, request):
+
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        createWeeklyScheduleBackground(repeat=1, repeat_until=None)
+
+        print("cc")
+
+        weeklySchedule = serializer.save()
+
+        return Response(serializer.data)
 
 
 class AllWeeklyScheduleViewSet(viewsets.ReadOnlyModelViewSet):
