@@ -17,8 +17,14 @@ class InlineScheduleSerializer(serializers.ModelSerializer):
         fields = ['weekDay', 'workingTime']
 
 
+class InlineScheduleSerializerWeekly(serializers.ModelSerializer):
+    class Meta:
+        model = Schedule,
+        fields = ['weekDay', 'workingTime', 'user']
+
+
 class WeeklyScheduleSerializer(serializers.ModelSerializer):
-    schedules = InlineScheduleSerializer(many=True)
+    schedules = InlineScheduleSerializerWeekly(many=True)
 
     class Meta:
         model = WeeklySchedule
